@@ -2,11 +2,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shipili_start_app/model/trip_order.dart';
+import 'package:shipili_start_app/providers/map_managemant/map_provider.dart';
 import 'package:shipili_start_app/providers/trip_managemant/trip_provider.dart';
 import 'package:shipili_start_app/screens/create_trip_screens/edit_validation_screen.dart';
 
 
  class FeatureScreen extends StatefulWidget {
+
+
+   static const routeName = '/Feature-screen';
+
    @override
    _FeatureScreenState createState() => _FeatureScreenState();
  }
@@ -27,9 +33,13 @@ import 'package:shipili_start_app/screens/create_trip_screens/edit_validation_sc
    bool              isSelected = false;
    List<String> selectedChoices = [];
 
-   bool _init =true;
-   var _initValues = {};
 
+   var _initValues = {};
+   bool _init= true;
+   bool _isLoading =true;
+
+   // using on case edititng state
+   String? tripItemId;
 
    @override
    void didChangeDependencies() async{
@@ -37,27 +47,24 @@ import 'package:shipili_start_app/screens/create_trip_screens/edit_validation_sc
      if(_init){
 
        final tripInitProvider = Provider.of<TripProvider>(context);
+       final args = ModalRoute.of(context)!.settings.arguments;
 
-       if(tripInitProvider.itemIdEdit!=null){ // we r on editing state
+       // get the id of item on case editing
+       tripItemId = args!=null
+           ? ModalRoute.of(context)!.settings.arguments as String
+           :null; // retreive the trip id ,
 
-         var _tripItem = Provider.of<TripProvider>(context).findTripItemById(tripInitProvider.itemIdEdit);
+       if(tripItemId!=null){ // we r on editing state
 
-
-         _weightController.text =  _tripItem.weightItem.toString();
-         _volumeController.text =  _tripItem.volumeItem.toString();
-         _priceController.text =  _tripItem.price.toString();
-
-         selectedChoices       =_tripItem.categoryItems!;
-
-       }else{
-
+         _weightController.text = tripInitProvider.weight.toString();
+         _volumeController.text = tripInitProvider.volume.toString();
+         _priceController.text  = tripInitProvider.price.toString();
+         selectedChoices        = tripInitProvider.categoryItems;
 
        }
 
-
-     }else{
-       _init= false;
      }
+       _init= false;
 
      // TODO: implement didChangeDependencies
      super.didChangeDependencies();
@@ -68,7 +75,8 @@ import 'package:shipili_start_app/screens/create_trip_screens/edit_validation_sc
 
 
 
-     final tripItemProprieties =  Provider.of<TripProvider>(context);
+     final tripInitProvider =  Provider.of<TripProvider>(context);
+     final mapInitProvider  = Provider.of<MapProvider>(context);
 
      return Scaffold(
 
@@ -89,7 +97,7 @@ import 'package:shipili_start_app/screens/create_trip_screens/edit_validation_sc
              ),
 
              Wrap(
-               children:  _buildChoiceList( tripItemProprieties.initialCategoryItems),
+               children:  _buildChoiceList( tripInitProvider.initialCategoryItems),
              ),
 
              SizedBox(height: 25,),
@@ -222,31 +230,50 @@ import 'package:shipili_start_app/screens/create_trip_screens/edit_validation_sc
            if(_priceController.text.isNotEmpty)
              _price =double.parse(_priceController.text);
 
-            tripItemProprieties.setVolume(_volume);
-            tripItemProprieties.setWeight(_weight);
-            tripItemProprieties.setPrice(_price);
+           tripInitProvider.setVolume(_volume);
+           tripInitProvider.setWeight(_weight);
+           tripInitProvider.setPrice(_price);
 
-            tripItemProprieties.setCategories(selectedChoices);
+           tripInitProvider.setCategories(selectedChoices);
 
-           Navigator.push(
-             context,
-             MaterialPageRoute(builder: (context) => EditValidationTripScreen()),
-           );
+            if(tripItemId!=null){
 
-           // if(tripItemProprieties.itemIdEdit!=null){
-           //
-           //   Navigator.push(
-           //     context,
-           //     MaterialPageRoute(builder: (context) => EditValidationTripScreen()),
-           //   );
-           // }else{
-           //   Navigator.push(
-           //     context,
-           //     MaterialPageRoute(builder: (context) => EditValidationTripScreen()),
-           //   );
-           // }
+              var tripOrder = Trip(
+                id             : tripItemId!,
+                userId         : 'user',
 
-          // tripItemProprieties.savePackageDetails(selectedChoices,_weight,_volume);
+                departure      : mapInitProvider.departureAdress,
+                arrival        : mapInitProvider.arrivalAdress,
+                checkpointsList: mapInitProvider.checkpointsList,
+
+                startTime      : tripInitProvider.startDate,
+                startHourTime  : tripInitProvider.startHour,
+
+                timeCreate     : DateTime.now(),
+
+                categoryItems : tripInitProvider.categoryItems,
+                weightItem    : tripInitProvider.weight,
+                volumeItem    : tripInitProvider.volume,
+                price         : tripInitProvider.price,
+
+              );
+
+              tripInitProvider.editTripOrder(tripItemId!,tripOrder).then((_)
+              {
+
+                Navigator.of(context).pushNamed(
+                    EditValidationTripScreen.routeName, arguments:tripItemId);
+
+              });
+
+            }else{
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => EditValidationTripScreen()),
+              );
+            }
+
 
          },
 

@@ -1,17 +1,17 @@
 import 'package:latlng/latlng.dart';
 
 class Trip {
-  final String id;
-  final String userId;
-  final DateTime timeCreate;
+  final String? id;
+  final String? userId;
+  final DateTime? timeCreate;
 
-  final String departure;
-  final String arrival;
-  final Map<String, LatLng> checkpointsList;
+  final String? departure;
+  final String? arrival;
+  final Map<String, LatLng>? checkpointsList;
   final List<String>? categoryItems;
 
-  final DateTime startTime;
-  final String startHourTime;
+  final DateTime? startTime;
+  final String? startHourTime;
 
   final double? weightItem;
   final double? volumeItem;
@@ -19,18 +19,19 @@ class Trip {
 
   Trip(
       {
-        required this.id,
-        required this.userId,
-        required this.timeCreate,
+         this.id,
+         this.userId,
 
-        required this.departure,
-        required this.arrival,
-        required this.checkpointsList,
+         this.timeCreate,
+
+         this.departure,
+         this.arrival,
+         this.checkpointsList,
 
         this.categoryItems,
 
-        required this.startTime,
-        required this.startHourTime,
+         this.startTime,
+         this.startHourTime,
 
         this.weightItem,
         this.volumeItem,

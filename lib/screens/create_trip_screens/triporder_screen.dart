@@ -50,7 +50,7 @@ class TripOrderScreen extends StatelessWidget {
                         children: [
 
                           Text( 
-                              '${DateFormat.yMd().format(tripItemProprieties.tripItems[index].startTime)} '
+                              '${DateFormat.yMd().format(tripItemProprieties.tripItems[index].startTime!)} '
                               '${tripItemProprieties.tripItems[index].startHourTime}' ,
                               style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold,color: Colors.grey,)),
                           SizedBox(height: 20,),
@@ -94,9 +94,9 @@ class TripOrderScreen extends StatelessWidget {
 
                               Column(
                                 children: [
-                                  Text(tripItemProprieties.tripItems[index].departure, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold,color: Colors.blueGrey)),
+                                  Text(tripItemProprieties.tripItems[index].departure!, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold,color: Colors.blueGrey)),
                                   SizedBox(height: 50,),
-                                  Text(tripItemProprieties.tripItems[index].arrival, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold,color: Colors.blueGrey)),
+                                  Text(tripItemProprieties.tripItems[index].arrival!, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold,color: Colors.blueGrey)),
                                 ],
                               ),
                             ],
@@ -117,7 +117,7 @@ class TripOrderScreen extends StatelessWidget {
                                 onPressed: (){
                                   print('tripItemProprieties.tripItems[index].id');
                                   print(tripItemProprieties.tripItems[index].id);
-                                  tripItemProprieties.removerTripOrder(tripItemProprieties.tripItems[index].id);
+                                  tripItemProprieties.removerTripOrder(tripItemProprieties.tripItems[index].id!);
                                 },
                               ),
                             ],

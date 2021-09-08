@@ -44,7 +44,6 @@ class MapProvider with ChangeNotifier{
 
   Map<String, LatLng>   get checkpointsList   => _checkpointsList;
 
-
   List<Map<String, LatLng>> _middleList = [];
   get middleList   => _middleList;
 
@@ -64,18 +63,23 @@ class MapProvider with ChangeNotifier{
     final response = await http.get(Uri.parse(request));
 
     if (response.statusCode == 200) {
+
       final result = json.decode(response.body);
+
       if (result['status'] == 'OK') {
         // compose suggestions in a list
         print(result['predictions']);
         notifyListeners();
+
         return result['predictions']
             .map<Suggestion>((p) => Suggestion(p['place_id'], p['description']))
             .toList();
       }
+
       if (result['status'] == 'ZERO_RESULTS') {
         return [];
       }
+
       throw Exception(result['error_message']);
     } else {
       throw Exception('Failed to fetch suggestion');

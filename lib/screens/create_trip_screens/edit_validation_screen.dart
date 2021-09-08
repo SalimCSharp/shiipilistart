@@ -54,8 +54,8 @@ class _EditValidationTripScreenState extends State<EditValidationTripScreen> {
       final mapInitProvider  = Provider.of<MapProvider>(context);
 
       // maybe navigate from the add screen/
-      if(tripInitProvider.itemIdEdit==null)
-      tripInitProvider.setItemIdEdit(tripItemId);
+      // if(tripInitProvider.itemIdEdit==null)
+      // tripInitProvider.setItemIdEdit(tripItemId);
 
       print('tripItemId=============> $tripItemId');
       print('tripItemId=== frmo Provider==========> ${tripInitProvider.itemIdEdit}');
@@ -63,14 +63,11 @@ class _EditValidationTripScreenState extends State<EditValidationTripScreen> {
 
       if(tripItemId != null) {
 
-
         // if the trip item is exist , first we get the trip item by its id
         final tripItems = tripInitProvider.tripItems;
         var _tripItem = Provider.of<TripProvider>(context).findTripItemById(tripItemId);
 
         print('ediiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiit new item');
-
-
 
         _initValues = {
 
@@ -90,10 +87,10 @@ class _EditValidationTripScreenState extends State<EditValidationTripScreen> {
 
         };
 
-        mapInitProvider.setTextAdress(_tripItem.departure, 'start');
-        mapInitProvider.setTextAdress(_tripItem.arrival,   'arrival');
-        tripInitProvider.setCategories(_tripItem.categoryItems);
-        tripInitProvider.setDateHour(DateTime.parse(_tripItem.startTime.toString()), _tripItem.startHourTime);
+        mapInitProvider.setTextAdress(_tripItem.departure!, 'start');
+        mapInitProvider.setTextAdress(_tripItem.arrival!,   'arrival');
+        tripInitProvider.setCategories(_tripItem.categoryItems!);
+        tripInitProvider.setDateHour(DateTime.parse(_tripItem.startTime.toString()), _tripItem.startHourTime!);
 
         tripInitProvider.setVolume(_tripItem.volumeItem);
         tripInitProvider.setWeight(_tripItem.weightItem);
@@ -153,15 +150,28 @@ class _EditValidationTripScreenState extends State<EditValidationTripScreen> {
                   "Check your trip order ?",
                   style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
                 ),
+
+              ),
+
+              IconButton(
+
+                  onPressed: (){
+                    Navigator.of(context).pushNamed(DepartureScreen.routeName, arguments:tripItemId );
+                    },
+
+                  icon: Icon(Icons.edit),
               ),
 
               GestureDetector(
+
                 onTap: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => DepartureScreen()),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(builder: (context) => DepartureScreen()),
+                  // );
                 },
+
+
                 child: ListTile(
                   leading: Icon(Icons.location_on, color: Colors.blue,),
                   title: Text(_initValues['departure']),
@@ -239,13 +249,22 @@ class _EditValidationTripScreenState extends State<EditValidationTripScreen> {
               Divider(
                 color: Colors.blue,
               ),
+
+              IconButton(
+
+                onPressed: (){
+                  Navigator.of(context).pushNamed(FeatureScreen.routeName, arguments:tripItemId );
+                },
+
+                icon: Icon(Icons.edit),
+              ),
               GestureDetector(
 
                 onTap: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => FeatureScreen()),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(builder: (context) => FeatureScreen()),
+                  // );
                 },
                 child: ListTile(
 
@@ -313,17 +332,11 @@ class _EditValidationTripScreenState extends State<EditValidationTripScreen> {
                       );
 
                       // call add void
-                      if(Provider.of<TripProvider>(context,listen: false).itemIdEdit==null)
+                      if(tripItemId == null)
                         {
                           // add new order
-
                           Provider.of<TripProvider>(context, listen: false).addTripOrder(tripOrder);
-                        }else{
-
-                        Provider.of<TripProvider>(context, listen: false).editTripOrder(Provider.of<TripProvider>(context,listen :false).itemIdEdit,tripOrder);
-
-                      }
-
+                        }
 
                       Navigator.push(
                         context,
@@ -347,7 +360,7 @@ class _EditValidationTripScreenState extends State<EditValidationTripScreen> {
                       ),
                       child: Center(
                         child: Text(
-                          Provider.of<TripProvider>(context).itemIdEdit==null ? "Confirmation":"Edit",
+                          tripItemId == null ? "Confirmation":"Edit",
                           style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,

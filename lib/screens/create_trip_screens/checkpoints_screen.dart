@@ -3,12 +3,14 @@
 import 'package:flutter/material.dart';
 import 'package:latlng/latlng.dart';
 import 'package:provider/provider.dart';
+import 'package:shipili_start_app/model/trip_order.dart';
 import 'package:shipili_start_app/providers/trip_managemant/trip_provider.dart';
 import 'package:shipili_start_app/screens/create_trip_screens/edit_validation_screen.dart';
 import '../../providers/map_managemant/map_provider.dart';
 import 'package:shipili_start_app/screens/create_trip_screens/date_time_screen.dart';
 
 class CheckPointScreen extends StatefulWidget {
+  static const routeName = '/CheckPoint-screen';
   @override
   _CheckPointScreenState createState() => _CheckPointScreenState();
 }
@@ -28,20 +30,29 @@ class _CheckPointScreenState extends State<CheckPointScreen> {
   bool _init= true;
   bool _isLoading =true;
 
+  // using on case edititng state
+  String? tripItemId;
+
   @override
   void didChangeDependencies() async{
 
     if(_init){
 
-      await Provider.of<MapProvider>(context, listen: false).calculateDistance().then((value){
+      final args = ModalRoute.of(context)!.settings.arguments;
 
+      // get the id of item on case editing
+      tripItemId = args!=null
+          ? ModalRoute.of(context)!.settings.arguments as String
+          :null; // retreive the trip id ,
+
+      await Provider.of<MapProvider>(context, listen: false).calculateDistance().then((value){
         setState(() {
           _isLoading = false;
         });
       });
-    }else{
-      _init= false;
+
     }
+    _init= false;
 
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
@@ -51,17 +62,11 @@ class _CheckPointScreenState extends State<CheckPointScreen> {
   Widget build(BuildContext context) {
 
 
-    final tripItemProprieties =  Provider.of<TripProvider>(context);
 
-    staticData = [
-      {
-        'algeria':LatLng(111,222)
-      },
+    final tripInitProvider = Provider.of<TripProvider>(context);
+    final mapInitProvider  = Provider.of<MapProvider>(context);
 
-      {
-        'oran':LatLng(111,222)
-      }
-    ];
+
 
     staticData =  Provider.of<MapProvider>(context, listen: false).middleList;
 
@@ -129,22 +134,59 @@ class _CheckPointScreenState extends State<CheckPointScreen> {
       ),
 
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async{
 
 
           print('----------------------------');
-          print(tripItemProprieties.itemIdEdit);
-          if(tripItemProprieties.itemIdEdit!=null)
+          print(tripItemId);
+
+          if(tripItemId!=null)
             {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => EditValidationTripScreen()),
+
+              var tripOrder = Trip(
+                id             : tripItemId!,
+                userId         : 'user',
+
+                departure      : mapInitProvider.departureAdress,
+                arrival        : mapInitProvider.arrivalAdress,
+                checkpointsList: mapInitProvider.checkpointsList,
+
+
+                startTime      : tripInitProvider.startDate,
+                startHourTime  : tripInitProvider.startHour,
+
+                timeCreate     : DateTime.now(),
+
+
+                categoryItems : tripInitProvider.categoryItems,
+                weightItem    : tripInitProvider.weight,
+                volumeItem    : tripInitProvider.volume,
+                price         : tripInitProvider.price,
               );
+
+              tripInitProvider.editTripOrder(tripItemId!,tripOrder).then((_)
+              {
+
+                Navigator.of(context).pushNamed(
+                    EditValidationTripScreen.routeName, arguments:tripItemId);
+
+              });
+
+
+
+
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => EditValidationTripScreen()),
+              // );
+              //
+
             }else  Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => DateTimeScreen()),
           );
         },
+
         child: Icon(Icons.navigate_next, color: Colors.white, size: 50,),
         backgroundColor: Colors.blue,
         tooltip: 'Capture Picture',

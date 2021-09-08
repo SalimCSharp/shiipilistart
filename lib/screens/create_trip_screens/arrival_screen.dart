@@ -8,6 +8,8 @@ import 'package:shipili_start_app/screens/create_trip_screens/checkpoints_screen
 import 'package:uuid/uuid.dart';
 
 class ArrivalScreen extends StatefulWidget {
+
+  static const routeName = '/arrival-screen';
   @override
   _ArrivalScreenState createState() => _ArrivalScreenState();
 }
@@ -16,8 +18,36 @@ class _ArrivalScreenState extends State<ArrivalScreen> {
 
   final arrivalAddressController        = TextEditingController();
 
+  // using on case edititng state
+  String? tripItemId;
+  bool _init= true;
+
+  @override
+  void didChangeDependencies() async{
+
+    if(_init){
+
+      final args = ModalRoute.of(context)!.settings.arguments;
+
+      // get the id of item on case editing
+      tripItemId = args!=null
+          ? ModalRoute.of(context)!.settings.arguments as String
+          :null; // retreive the trip id ,
+
+    }
+      _init= false;
+
+
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
+
+    print('arrival screen              $tripItemId');
     return Scaffold(
 
       backgroundColor: Colors.white,
@@ -118,10 +148,8 @@ class _ArrivalScreenState extends State<ArrivalScreen> {
 
                 onTap: (){
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => CheckPointScreen()),
-                  );
+                  Navigator.of(context).pushNamed(CheckPointScreen.routeName, arguments:tripItemId );
+
                 },
                 child: Container(
                   decoration: BoxDecoration(
