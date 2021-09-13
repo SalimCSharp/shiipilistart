@@ -85,6 +85,8 @@ class _EditValidationTripScreenState extends State<EditValidationTripScreen> {
           'weightItem'       : _tripItem.weightItem,
           'volumeItem'       : _tripItem.volumeItem,
 
+          'tripCar'          : _tripItem.tripCar,
+
         };
 
         mapInitProvider.setTextAdress(_tripItem.departure!, 'start');
@@ -95,6 +97,8 @@ class _EditValidationTripScreenState extends State<EditValidationTripScreen> {
         tripInitProvider.setVolume(_tripItem.volumeItem);
         tripInitProvider.setWeight(_tripItem.weightItem);
         tripInitProvider.setPrice(_tripItem.price);
+
+        tripInitProvider.setTripCar(_tripItem.tripCar);
 
       }else{
 
@@ -115,6 +119,8 @@ class _EditValidationTripScreenState extends State<EditValidationTripScreen> {
 
           'categoryItem'     : tripInitProvider.categoryItems        ,
           'interStations'    : mapInitProvider.checkpointsList       ,
+
+          'tripCar'          : tripInitProvider.selectedCar,
         };
 
       }
@@ -193,6 +199,7 @@ class _EditValidationTripScreenState extends State<EditValidationTripScreen> {
                 height: 150,
                 child: ListView.builder(
 
+
                     itemCount: _initValues['interStations'].length,
                     itemBuilder: (context, index){
                       return Row(
@@ -210,23 +217,12 @@ class _EditValidationTripScreenState extends State<EditValidationTripScreen> {
                                 color: Colors.grey,
                               ),
                               if(index !=_initValues['interStations'].length-1)
-                              Row(
-                                children: [
-                                  Container(
-                                    // margin: EdgeInsets.symmetric(vertical:  2),
-                                    height: 50,
-                                    width:2 ,
-                                    color: Colors.grey,
-                                  ),
-                                  SizedBox(width: 3,),
-                                  Container(
-                                    // margin: EdgeInsets.symmetric(vertical:  2),
-                                    height: 50,
-                                    width: 2,
-                                    color: Colors.grey,
-                                  ),
-                                ],
-                              ),
+                                Container(
+                                  // margin: EdgeInsets.symmetric(vertical:  2),
+                                  height: 20,
+                                  width:4 ,
+                                  color: Colors.blueGrey,
+                                ),
 
                             ],
                           ),
@@ -328,6 +324,8 @@ class _EditValidationTripScreenState extends State<EditValidationTripScreen> {
                         weightItem    : _initValues['weightItem'],
                         volumeItem    : _initValues['volumeItem'],
                         price         : _initValues['priceTrip'],
+
+                        tripCar       : _initValues['tripCar'],
 
                       );
 

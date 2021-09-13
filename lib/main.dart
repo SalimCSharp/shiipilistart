@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shipili_start_app/providers/trip_managemant/trip_provider.dart';
+import 'package:shipili_start_app/screens/create_trip_screens/add_car_screen.dart';
 import 'package:shipili_start_app/screens/create_trip_screens/arrival_screen.dart';
 import 'package:shipili_start_app/screens/create_trip_screens/checkpoints_screen.dart';
 import 'package:shipili_start_app/screens/create_trip_screens/departure_screen.dart';
@@ -50,6 +51,8 @@ class MyApp extends StatelessWidget {
           ArrivalScreen.routeName : (ctx) => ArrivalScreen(),
           CheckPointScreen.routeName : (ctx) => CheckPointScreen(),
           FeatureScreen.routeName : (ctx) => FeatureScreen(),
+
+          AddCarScreen.routeName : (ctx) => AddCarScreen(),
 
           TabScreen.routeName : (ctx) => TabScreen(),
         },

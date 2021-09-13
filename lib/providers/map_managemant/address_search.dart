@@ -77,6 +77,7 @@ class AddressSearch extends SearchDelegate {
                       onTap: () {
                          close(context, snapshot.data![index]);
                        },
+
                 trailing: Icon(
                   Icons.subdirectory_arrow_left_rounded,
                   color: Colors.grey,

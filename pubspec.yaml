@@ -36,6 +36,8 @@ dependencies:
   latlng: ^0.1.0
   geocoding:
   intl:
+  fluttericon: ^2.0.0
+
 
 
 dev_dependencies:

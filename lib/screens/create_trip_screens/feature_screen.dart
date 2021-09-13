@@ -2,9 +2,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shipili_start_app/model/car.dart';
 import 'package:shipili_start_app/model/trip_order.dart';
 import 'package:shipili_start_app/providers/map_managemant/map_provider.dart';
 import 'package:shipili_start_app/providers/trip_managemant/trip_provider.dart';
+import 'package:shipili_start_app/screens/create_trip_screens/add_car_screen.dart';
 import 'package:shipili_start_app/screens/create_trip_screens/edit_validation_screen.dart';
 
 
@@ -33,10 +35,13 @@ import 'package:shipili_start_app/screens/create_trip_screens/edit_validation_sc
    bool              isSelected = false;
    List<String> selectedChoices = [];
 
+   Car? selectedCar;
 
    var _initValues = {};
    bool _init= true;
    bool _isLoading =true;
+
+   int? selectedIndex;
 
    // using on case edititng state
    String? tripItemId;
@@ -56,14 +61,18 @@ import 'package:shipili_start_app/screens/create_trip_screens/edit_validation_sc
 
        if(tripItemId!=null){ // we r on editing state
 
-         _weightController.text = tripInitProvider.weight.toString();
-         _volumeController.text = tripInitProvider.volume.toString();
-         _priceController.text  = tripInitProvider.price.toString();
+         _weightController.text = tripInitProvider.weight!=null ? tripInitProvider.weight.toString():'';
+         _volumeController.text = tripInitProvider.volume!=null ? tripInitProvider.volume.toString():'';
+         _priceController.text  = tripInitProvider.price!=null ? tripInitProvider.price.toString():'';
          selectedChoices        = tripInitProvider.categoryItems;
-
+         selectedCar            = tripInitProvider.selectedCar;
+         selectedIndex = tripInitProvider.carItems.indexWhere((element) => element==selectedCar);
        }
 
+
+
      }
+
        _init= false;
 
      // TODO: implement didChangeDependencies
@@ -78,141 +87,214 @@ import 'package:shipili_start_app/screens/create_trip_screens/edit_validation_sc
      final tripInitProvider =  Provider.of<TripProvider>(context);
      final mapInitProvider  = Provider.of<MapProvider>(context);
 
+     // if there is un elemnt of car on list , considred default
+     if(tripInitProvider.carItems.length == 1){
+       print('elemnt first selected by default');
+       selectedIndex=0;
+       tripInitProvider.setTripCar(tripInitProvider.carItems[selectedIndex!]);
+     }
+
      return Scaffold(
 
-       body: Padding(
-         padding: const EdgeInsets.all(20.0),
-         child: Column(
+       body: SingleChildScrollView(
 
-           crossAxisAlignment: CrossAxisAlignment.start,
-           children: [
+         child: Padding(
+           padding: const EdgeInsets.all(20.0),
+           child: Column(
 
-             Padding(
-               padding: const EdgeInsets.all(20.0),
-               child: Text(
+             crossAxisAlignment: CrossAxisAlignment.start,
+             children: [
 
-                 "Select your items characteristics ?",
-                 style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
+               Padding(
+                 padding: const EdgeInsets.all(20.0),
+                 child: Text(
+
+                   "Select your items characteristics ?",
+                   style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
+                 ),
                ),
-             ),
 
-             Wrap(
-               children:  _buildChoiceList( tripInitProvider.initialCategoryItems),
-             ),
+               Wrap(
+                 children:  _buildChoiceList( tripInitProvider.initialCategoryItems),
+               ),
 
-             SizedBox(height: 25,),
+               SizedBox(height: 25,),
 
-             TextFormField(
+               TextFormField(
 
 
-               controller: _volumeController,
-               onTap: () async{
+                 controller: _volumeController,
+                 onTap: () async{
 
-               },
+                 },
 
-               decoration: InputDecoration(
-                 filled: true,
-                 prefixIcon:  const Icon(Icons.date_range) ,
-                 border: OutlineInputBorder(
-                     borderSide: BorderSide.none,
-                     borderRadius: BorderRadius.circular(20)
+                 decoration: InputDecoration(
+                   filled: true,
+                   prefixIcon:  const Icon(Icons.date_range) ,
+                   border: OutlineInputBorder(
+                       borderSide: BorderSide.none,
+                       borderRadius: BorderRadius.circular(20)
+                   ),
+
+                   hintText: 'Volume',
                  ),
 
-                 hintText: 'Volume',
+                 keyboardType: TextInputType.number,
+                 textInputAction: TextInputAction.next,
+
+
+                 onSaved: (value){  // the entred value , set to the current product (update)
+                   //_phoneNumber =int.parse(value);
+                 },
+
+                 // we can trig validation each keystrock by enabling onVaoldation to true on form or manuall by _form_currentsatate.validate()
+                 validator: (value){
+                   if(value!.isEmpty)
+                   {
+                     return 'Please select arrive date and time';
+                   }
+                   return null; // return false
+                 },
                ),
 
-               keyboardType: TextInputType.number,
-               textInputAction: TextInputAction.next,
-
-
-               onSaved: (value){  // the entred value , set to the current product (update)
-                 //_phoneNumber =int.parse(value);
-               },
-
-               // we can trig validation each keystrock by enabling onVaoldation to true on form or manuall by _form_currentsatate.validate()
-               validator: (value){
-                 if(value!.isEmpty)
-                 {
-                   return 'Please select arrive date and time';
-                 }
-                 return null; // return false
-               },
-             ),
-
-             SizedBox(height: 25,),
-             TextFormField(
+               SizedBox(height: 25,),
+               TextFormField(
 
 
 
-               controller: _weightController,
+                 controller: _weightController,
 
-               onTap: () async{
+                 onTap: () async{
 
-               },
+                 },
 
-               decoration: InputDecoration(
+                 decoration: InputDecoration(
 
-                 filled: true,
-                 prefixIcon:  const Icon(Icons.input) ,
-                 border: OutlineInputBorder(
-                     borderSide: BorderSide.none,
-                     borderRadius: BorderRadius.circular(20)
+                   filled: true,
+                   prefixIcon:  const Icon(Icons.input) ,
+                   border: OutlineInputBorder(
+                       borderSide: BorderSide.none,
+                       borderRadius: BorderRadius.circular(20)
+                   ),
+
+                   // icon: const Icon(Icons.date_range),
+                   hintText: 'Weight',
+
                  ),
 
-                 // icon: const Icon(Icons.date_range),
-                 hintText: 'Weight',
+                 keyboardType: TextInputType.number,
+                 textInputAction: TextInputAction.done,
+
+
+                 onSaved: (value){  // the entred value , set to the current product (update)
+
+                   //_phoneNumber =int.parse(value);
+                 },
+
+                 // we can trig validation each keystrock by enabling onVaoldation to true on form or manuall by _form_currentsatate.validate()
+                 validator: (value){
+
+                   if(value!.isEmpty)
+                   {
+                     return 'Please select weight';
+                   }
+                   return null; // return false
+                 },
 
                ),
 
-               keyboardType: TextInputType.number,
-               textInputAction: TextInputAction.done,
+
+               SizedBox(height: 25,),
+               TextFormField(
 
 
-               onSaved: (value){  // the entred value , set to the current product (update)
+                 controller: _priceController,
+                 decoration: InputDecoration(
 
-                 //_phoneNumber =int.parse(value);
-               },
+                   filled: true,
+                   prefixIcon:  const Icon(Icons.input) ,
+                   border: OutlineInputBorder(
+                       borderSide: BorderSide.none,
+                       borderRadius: BorderRadius.circular(20)
+                   ),
 
-               // we can trig validation each keystrock by enabling onVaoldation to true on form or manuall by _form_currentsatate.validate()
-               validator: (value){
-
-                 if(value!.isEmpty)
-                 {
-                   return 'Please select weight';
-                 }
-                 return null; // return false
-               },
-
-             ),
-
-
-             SizedBox(height: 25,),
-             TextFormField(
-
-
-               controller: _priceController,
-               decoration: InputDecoration(
-
-                 filled: true,
-                 prefixIcon:  const Icon(Icons.input) ,
-                 border: OutlineInputBorder(
-                     borderSide: BorderSide.none,
-                     borderRadius: BorderRadius.circular(20)
+                   // icon: const Icon(Icons.date_range),
+                   hintText: 'Price',
                  ),
 
-                 // icon: const Icon(Icons.date_range),
-                 hintText: 'Price',
+                 keyboardType: TextInputType.number,
+                 textInputAction: TextInputAction.done,
+               ),
+               Align(
+                 alignment: AlignmentDirectional.bottomEnd,
+                   child: Text("Sugessted Price : 1500DA" ,
+                     style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),)
                ),
 
-               keyboardType: TextInputType.number,
-               textInputAction: TextInputAction.done,
-             ),
-             Align(
-               alignment: AlignmentDirectional.bottomEnd,
-                 child: Text("Sugessted Price : 1500DA" ,
-                   style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),)
-             ),
-           ],
+               IconButton(onPressed: (){
+
+                 Navigator.push(
+                   context,
+                   MaterialPageRoute(builder: (context) => AddCarScreen()),
+                 );
+               },
+                   icon: Icon(Icons.add)),
+               Row(
+                 children: [
+                   Text("Select your Transport Way" ,
+                     style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),),
+                 ],
+               ),
+
+
+               tripInitProvider.carItems.isNotEmpty
+                   ? ListView.builder(
+
+                     shrinkWrap: true,
+                     itemCount: tripInitProvider.carItems.length ,
+                     itemBuilder: (context,index){
+
+                       return GestureDetector(
+
+                         onTap: () {
+                           setState(() {
+                             selectedIndex = index;
+                             tripInitProvider.setTripCar(tripInitProvider.carItems[index]);
+                           });
+                         },
+                         child: Card(
+
+
+                           color: selectedIndex == index ? Colors.grey : null,
+                           shape: RoundedRectangleBorder(
+                             borderRadius: BorderRadius.circular(15.0),
+                           ),
+                           elevation: 3,
+
+                           child: ListTile(
+
+
+                               //tileColor: selectedIndex == index ? Colors.blue : null,
+                               leading: tripInitProvider.carItems[index].type!.icon,
+                               title: Text(tripInitProvider.carItems[index].type!.name),
+                              // title: Text(tripInitProvider.carItems[index].brand),
+                               trailing:Text(tripInitProvider.carItems[index].regNumber) ,
+                               subtitle:Text(tripInitProvider.carItems[index].model),
+
+                             ),
+                         ),
+                       );
+
+                     })
+
+                   : IconButton(onPressed: (){
+                     Navigator.push(context, MaterialPageRoute(builder: (context) => AddCarScreen()),
+                 );
+
+               },
+                   icon: Icon(Icons.add)),
+             ],
+           ),
          ),
        ),
 
@@ -236,6 +318,7 @@ import 'package:shipili_start_app/screens/create_trip_screens/edit_validation_sc
 
            tripInitProvider.setCategories(selectedChoices);
 
+
             if(tripItemId!=null){
 
               var tripOrder = Trip(
@@ -256,6 +339,7 @@ import 'package:shipili_start_app/screens/create_trip_screens/edit_validation_sc
                 volumeItem    : tripInitProvider.volume,
                 price         : tripInitProvider.price,
 
+                tripCar       : tripInitProvider.selectedCar,
               );
 
               tripInitProvider.editTripOrder(tripItemId!,tripOrder).then((_)

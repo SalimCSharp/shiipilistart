@@ -162,6 +162,8 @@ class _CheckPointScreenState extends State<CheckPointScreen> {
                 weightItem    : tripInitProvider.weight,
                 volumeItem    : tripInitProvider.volume,
                 price         : tripInitProvider.price,
+
+                tripCar       :  tripInitProvider.selectedCar,
               );
 
               tripInitProvider.editTripOrder(tripItemId!,tripOrder).then((_)

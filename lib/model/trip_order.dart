@@ -1,4 +1,5 @@
 import 'package:latlng/latlng.dart';
+import 'package:shipili_start_app/model/car.dart';
 
 class Trip {
   final String? id;
@@ -16,6 +17,8 @@ class Trip {
   final double? weightItem;
   final double? volumeItem;
   final double? price;
+
+  final Car? tripCar;
 
   Trip(
       {
@@ -35,7 +38,9 @@ class Trip {
 
         this.weightItem,
         this.volumeItem,
-        this.price
+        this.price,
+
+        this.tripCar,
 
       });
 }
